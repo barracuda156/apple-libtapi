@@ -35,4 +35,6 @@ add_tapi_library(tapiCore
 
   LINK_LIBS
   clangBasic
+  PRIVATE
+    tapiObjCMetadata
   )

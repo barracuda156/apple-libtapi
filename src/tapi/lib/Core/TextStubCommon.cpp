@@ -20,15 +20,15 @@ namespace llvm {
 namespace yaml {
 
 using Impl = ScalarTraits<StringRef>;
-void ScalarTraits<FlowStringRef>::output(const FlowStringRef &value, void *ctx,
+inline void ScalarTraits<FlowStringRef>::output(const FlowStringRef &value, void *ctx,
                                          raw_ostream &os) {
   Impl::output(value, ctx, os);
 }
-StringRef ScalarTraits<FlowStringRef>::input(StringRef value, void *ctx,
+inline StringRef ScalarTraits<FlowStringRef>::input(StringRef value, void *ctx,
                                              FlowStringRef &out) {
   return Impl::input(value, ctx, out.value);
 }
-QuotingType ScalarTraits<FlowStringRef>::mustQuote(StringRef name) {
+inline QuotingType ScalarTraits<FlowStringRef>::mustQuote(StringRef name) {
   return Impl::mustQuote(name);
 }
 
@@ -57,7 +57,7 @@ void ScalarEnumerationTraits<PlatformKind>::enumeration(
   io.enumCase(platform, "bridgeos", PlatformKind::bridgeOS);
 }
 
-void ScalarBitSetTraits<ArchitectureSet>::bitset(IO &io,
+inline void ScalarBitSetTraits<ArchitectureSet>::bitset(IO &io,
                                                  ArchitectureSet &archs) {
 #define ARCHINFO(arch, type, subtype, numbits)                                 \
   io.bitSetCase(archs, #arch, 1U << static_cast<int>(AK_##arch));
@@ -65,16 +65,16 @@ void ScalarBitSetTraits<ArchitectureSet>::bitset(IO &io,
 #undef ARCHINFO
 }
 
-void ScalarTraits<Architecture>::output(const Architecture &value, void *,
+inline void ScalarTraits<Architecture>::output(const Architecture &value, void *,
                                         raw_ostream &os) {
   os << value;
 }
-StringRef ScalarTraits<Architecture>::input(StringRef scalar, void *,
+inline StringRef ScalarTraits<Architecture>::input(StringRef scalar, void *,
                                             Architecture &value) {
   value = getArchitectureFromName(scalar);
   return {};
 }
-QuotingType ScalarTraits<Architecture>::mustQuote(StringRef) {
+inline QuotingType ScalarTraits<Architecture>::mustQuote(StringRef) {
   return QuotingType::None;
 }
 
@@ -93,7 +93,7 @@ QuotingType ScalarTraits<PackedVersion>::mustQuote(StringRef) {
   return QuotingType::None;
 }
 
-void ScalarTraits<SwiftVersion>::output(const SwiftVersion &value, void *,
+inline void ScalarTraits<SwiftVersion>::output(const SwiftVersion &value, void *,
                                         raw_ostream &os) {
   switch (value) {
   case 1:
@@ -113,7 +113,7 @@ void ScalarTraits<SwiftVersion>::output(const SwiftVersion &value, void *,
     break;
   }
 }
-StringRef ScalarTraits<SwiftVersion>::input(StringRef scalar, void *,
+inline StringRef ScalarTraits<SwiftVersion>::input(StringRef scalar, void *,
                                             SwiftVersion &value) {
   value = StringSwitch<SwiftVersion>(scalar)
               .Case("1.0", 1)
@@ -129,7 +129,7 @@ StringRef ScalarTraits<SwiftVersion>::input(StringRef scalar, void *,
 
   return StringRef();
 }
-QuotingType ScalarTraits<SwiftVersion>::mustQuote(StringRef) {
+inline QuotingType ScalarTraits<SwiftVersion>::mustQuote(StringRef) {
   return QuotingType::None;
 }
 
@@ -171,7 +171,7 @@ QuotingType ScalarTraits<AvailabilityInfo>::mustQuote(StringRef) {
   return QuotingType::None;
 }
 
-void ScalarTraits<UUID>::output(const UUID &value, void *c, raw_ostream &os) {
+inline void ScalarTraits<UUID>::output(const UUID &value, void *c, raw_ostream &os) {
   auto *ctx = reinterpret_cast<YAMLContext *>(c);
   assert(ctx);
 
@@ -180,7 +180,7 @@ void ScalarTraits<UUID>::output(const UUID &value, void *c, raw_ostream &os) {
   else
     os << value.first << ": " << value.second;
 }
-StringRef ScalarTraits<UUID>::input(StringRef scalar, void *c, UUID &value) {
+inline StringRef ScalarTraits<UUID>::input(StringRef scalar, void *c, UUID &value) {
   auto split = scalar.split(':');
   auto arch = split.first.trim();
   auto uuid = split.second.trim();
@@ -191,7 +191,7 @@ StringRef ScalarTraits<UUID>::input(StringRef scalar, void *c, UUID &value) {
   value.second = uuid.str();
   return {};
 }
-QuotingType ScalarTraits<UUID>::mustQuote(StringRef) {
+inline QuotingType ScalarTraits<UUID>::mustQuote(StringRef) {
   return QuotingType::Single;
 }
 
